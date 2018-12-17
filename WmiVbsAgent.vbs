@@ -2,8 +2,8 @@
 'RULES:
 ' [X] Only VBS
 ' [X] connect to server through http(s)
-' [.] get wmi classes to send
-' [ ] parse and collect wmi info
+' [X] get wmi classes to send
+' [.] parse and collect wmi info
 ' [ ] send wmi info through http post
 ' [ ] adjust minimal interval
 ' [ ] return Exitcode to task scheduler
@@ -15,55 +15,17 @@ Set objWMIClasses = CreateObject("Scripting.Dictionary")
 'On Error resume next
 Start
 Function Start
- On error resume next
+ 'On error resume next
  log "Iniciando WmiVbsAgent v0.2"
  WMIUrl = GetWMIUrl
  log "ReportAddress=" & WMIUrl
  'WMIRequestList = Array("Win32_bios.serialnumber","win32_computersystem.caption") 'loadRequestList(WMIUrl)
  WMIRequestList = loadRequestList(WMIUrl)
 
-log "carregando automatico do servidor"
-For each wr in WMIRequestList
-  getWMIClass(split(wr,".")(0))
-Next
-
-  log "########## teste manual #########" & chr(10)
-for each i in split("Win32_Operatingsystem.caption x Win32_OperatingSystem.name sndajsh.dahsd oihasd hasoi.dhaosid Win32_Bios.SerialNumber win32_localtime.year win32_localtime.day")
-    item = split(i,".")(1)    
-    For each objItem in getWMIClass(split(i,".")(0))
-      log i & " = " & eval("objItem."&item)
-    next
-Next
- 
- 'log join(WMIRequestList,"; ")
-'log WMIRequestList(0)
-'log split(WMIRequestList(0),".")(0)
-'log split(WMIRequestList(0),".")(1)
-'
-'pop = gWmi("win32_Bios").SerialNumber
-'
-'log "Win32_Bios.SerialNumber=" & pop
-'
-'log "-------"
-'set pop2 = gWmi(WMIRequestList(0))
-''log debugObject(pop2)
-
-'Dim dN 
-'Set dN = CreateObject("Scripting.Dictionary")
-'
-'log Join(WMIRequestList,"-")
-'a = WMIRequestList(2)
-'a1 = split(a,".")(0)
-'a2 = split(a,".")(1)
-'set dn(a1) = eval("gWmi(a1)")
-'dn(a1&"_"&a2) = eval("dn(a1)." & a2)
-'log dn(a1&"_"&a2) 
-''log a1&"_"&a2
-'log dn(a1&"_"&a2)
-''wscript.echo Win32_ComputerSystem_Name
-'
-''log eval("gWmi(""win32_bios"").SerialNumber")
-''log debugObject(gWmi("win32_bios"))
+  log "########## teste de consulta #########" & chr(10)
+  for each WMIProp in WMIRequestList
+   log WMIProp & " = " & getWMIProp(WMIProp)
+  next
 End Function
 
 Function Log (msg)
@@ -117,22 +79,6 @@ end function
 '#############################################################################
 'executeGlobal " "
 
-
-'Dim dN 
-'Set dN = CreateObject("Scripting.Dictionary")
-'
-'dN("AA") = "aa"
-'dN("BB") = "bb"
-'
-'Dim sN
-'For Each sN In Split("AA CC BB")
-'    If dN.Exists(sN) Then
-'       WScript.Echo sN, dN(sN)
-'    Else
-'       WScript.Echo sN, "???"
-'    End If
-'Next
-
 '############################################################################
 'module_hvht2
 'Dim timezone, localtime, computersystem, operatingsystem, SID, IPAddresses
@@ -156,6 +102,30 @@ Function getWMIClass (wClass)
   end if
   set getWMIClass = objWMIClasses(WMIClass)
 End Function
+
+function getWMIProp (wPropReq)
+  On Error Resume Next
+  dim WMIPropList, rSep, wVal
+  rSep = ""
+  wReq = LCase(wPropReq)
+  wReqClass = Split(wReq,".")(0)
+  wProp = Split(wReq,".")(1)
+  For each wItem in getWMIClass(wReqClass)
+    wVal = Eval("wItem."&wProp)
+    if not (IsBlank(wVal)) then
+      if VarType(Eval("wItem."&wProp)) = (vbVariant + vbArray) then
+        wVal = join(Eval("wItem."&wProp),",")
+      Else
+        wVal = Eval("wItem."&wProp)
+      end if
+      WMIPropList = WMIPropList & rSep & wVal
+      rSep = ","
+    end if
+    wVal = ""
+  Next
+  getWMIProp = WMIPropList
+end function
+
 
 function getSystemId (mName)
   Set objWmi = objWMIService.ExecQuery( "SELECT SID FROM Win32_UserAccount WHERE SID LIKE '%-500' AND Domain = '" & mName & "'")
@@ -215,6 +185,28 @@ function exitReason (eCode,eMessage)
   log eMessage
   wscript.quit(eCode)
 end function
+
+Function IsBlank(Value)
+ 'Refer https://ss64.com/vb/syntax-null.html
+ 'returns True if Empty or NULL or Zero
+ If IsEmpty(Value) or IsNull(Value) Then
+  IsBlank = True
+ ElseIf VarType(Value) = vbString Then
+  If Value = "" Then
+   IsBlank = True
+  End If
+ ElseIf IsObject(Value) Then
+  If Value Is Nothing Then
+   IsBlank = True
+  End If
+ ElseIf IsNumeric(Value) Then
+  If Value = 0 Then
+   IsBlank = True
+  End If
+ Else
+  IsBlank = False
+ End If
+End Function
 
 Function debugObject(objClass)
  'Generate from: https://www.vbsedit.com/scripts/misc/wmi/scr_1332.asp
