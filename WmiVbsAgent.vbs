@@ -9,17 +9,33 @@
 ' [ ] return Exitcode to task scheduler
 
 '################################################'
+Dim objWMIClasses, objWMIService
 Set objWMIService = GetObject("winmgmts:\\.\root\CIMV2")
-Dim WMIForm,WMIUrl
+Set objWMIClasses = CreateObject("Scripting.Dictionary")
 'On Error resume next
 Start
 Function Start
+ On error resume next
  log "Iniciando WmiVbsAgent v0.2"
  WMIUrl = GetWMIUrl
  log "ReportAddress=" & WMIUrl
+ 'WMIRequestList = Array("Win32_bios.serialnumber","win32_computersystem.caption") 'loadRequestList(WMIUrl)
  WMIRequestList = loadRequestList(WMIUrl)
 
-'log join(WMIRequestList,"; ")
+log "carregando automatico do servidor"
+For each wr in WMIRequestList
+  getWMIClass(split(wr,".")(0))
+Next
+
+  log "########## teste manual #########" & chr(10)
+for each i in split("Win32_Operatingsystem.caption x Win32_OperatingSystem.name sndajsh.dahsd oihasd hasoi.dhaosid Win32_Bios.SerialNumber win32_localtime.year win32_localtime.day")
+    item = split(i,".")(1)    
+    For each objItem in getWMIClass(split(i,".")(0))
+      log i & " = " & eval("objItem."&item)
+    next
+Next
+ 
+ 'log join(WMIRequestList,"; ")
 'log WMIRequestList(0)
 'log split(WMIRequestList(0),".")(0)
 'log split(WMIRequestList(0),".")(1)
@@ -32,42 +48,22 @@ Function Start
 'set pop2 = gWmi(WMIRequestList(0))
 ''log debugObject(pop2)
 
-Dim dN 
-Set dN = CreateObject("Scripting.Dictionary")
-
-log Join(WMIRequestList,"-")
-a = WMIRequestList(2)
-a1 = split(a,".")(0)
-a2 = split(a,".")(1)
-set dn(a1) = eval("gWmi(a1)")
-dn(a1&"_"&a2) = eval("dn(a1)." & a2)
-log dn(a1&"_"&a2) 
-'log a1&"_"&a2
-log dn(a1&"_"&a2)
-'wscript.echo Win32_ComputerSystem_Name
-
-'log eval("gWmi(""win32_bios"").SerialNumber")
-'log debugObject(gWmi("win32_bios"))
-
-
-
 'Dim dN 
 'Set dN = CreateObject("Scripting.Dictionary")
 '
-'dN("AA") = "aa"
-'dN("BB") = "bb"
+'log Join(WMIRequestList,"-")
+'a = WMIRequestList(2)
+'a1 = split(a,".")(0)
+'a2 = split(a,".")(1)
+'set dn(a1) = eval("gWmi(a1)")
+'dn(a1&"_"&a2) = eval("dn(a1)." & a2)
+'log dn(a1&"_"&a2) 
+''log a1&"_"&a2
+'log dn(a1&"_"&a2)
+''wscript.echo Win32_ComputerSystem_Name
 '
-'Dim sN
-'For Each sN In Split("AA CC BB")
-'    If dN.Exists(sN) Then
-'       WScript.Echo sN, dN(sN)
-'    Else
-'       WScript.Echo sN, "???"
-'    End If
-'Next
-
-
-
+''log eval("gWmi(""win32_bios"").SerialNumber")
+''log debugObject(gWmi("win32_bios"))
 End Function
 
 Function Log (msg)
@@ -121,6 +117,22 @@ end function
 '#############################################################################
 'executeGlobal " "
 
+
+'Dim dN 
+'Set dN = CreateObject("Scripting.Dictionary")
+'
+'dN("AA") = "aa"
+'dN("BB") = "bb"
+'
+'Dim sN
+'For Each sN In Split("AA CC BB")
+'    If dN.Exists(sN) Then
+'       WScript.Echo sN, dN(sN)
+'    Else
+'       WScript.Echo sN, "???"
+'    End If
+'Next
+
 '############################################################################
 'module_hvht2
 'Dim timezone, localtime, computersystem, operatingsystem, SID, IPAddresses
@@ -137,9 +149,12 @@ function gWmi (wmiClass)
   next
 end function
 
-Function WQL (WMIQuery)
-  Set WMIService = GetObject("winmgmts:\\.\root\CIMV2")
-  Set WQL = WMIService.ExecQuery(WMIQuery)
+Function getWMIClass (wClass)
+  WMIClass = LCase(wClass)
+  if not (objWMIClasses.Exists(WMIClass)) Then
+    set objWMIClasses(WMIClass) = objWMIService.ExecQuery( "SELECT * FROM " & WMIClass)
+  end if
+  set getWMIClass = objWMIClasses(WMIClass)
 End Function
 
 function getSystemId (mName)
