@@ -22,9 +22,6 @@ Function Start
  'On error resume next
 <<<<<<< HEAD
  log "Iniciando WmiVbsAgent v0.8"
-=======
- log "Iniciando WmiVbsAgent v0.2"
->>>>>>> caab79947c4389a820287fbf87080d080381515f
  WMIUrl = GetWMIUrl
  log "ReportAddress=" & WMIUrl
  'WMIRequestList = Array("Win32_bios.serialnumber","win32_computersystem.caption") 'loadRequestList(WMIUrl)
