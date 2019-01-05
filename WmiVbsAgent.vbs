@@ -3,12 +3,8 @@
 ' [X] Only VBS
 ' [X] connect to server through http(s)
 ' [X] get wmi classes to send
-<<<<<<< HEAD
 ' [X] parse and collect wmi info
-=======
-' [.] parse and collect wmi info
->>>>>>> caab79947c4389a820287fbf87080d080381515f
-' [ ] send wmi info through http post
+' [.] send wmi info through http post
 ' [ ] adjust minimal interval
 ' [ ] return Exitcode to task scheduler
 
@@ -20,11 +16,9 @@ Set objWMIClasses = CreateObject("Scripting.Dictionary")
 Start
 Function Start
  'On error resume next
-<<<<<<< HEAD
- log "Iniciando WmiVbsAgent v0.8"
+ log "Iniciando WmiVbsAgent v0.9"
  WMIUrl = GetWMIUrl
  log "ReportAddress=" & WMIUrl
- 'WMIRequestList = Array("Win32_bios.serialnumber","win32_computersystem.caption") 'loadRequestList(WMIUrl)
  WMIRequestList = loadRequestList(WMIUrl)
 
   log "########## teste de consulta #########" & chr(10)
