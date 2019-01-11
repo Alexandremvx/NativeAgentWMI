@@ -40,6 +40,7 @@ Function UsingCScript
 End Function
 
 Function HTTPGet(sUrl)
+ On Error Resume Next
  set oHTTP = CreateObject("Microsoft.XMLHTTP")
  oHTTP.open "GET", sUrl,false
  oHTTP.setRequestHeader "Content-Type", "application/x-www-form-urlencoded"
@@ -75,12 +76,6 @@ function loadRequestList(serverUrl)
   end if
   loadRequestList = requestList
 end function
-'#############################################################################
-'executeGlobal " "
-
-'############################################################################
-'module_hvht2
-'Dim timezone, localtime, computersystem, operatingsystem, SID, IPAddresses
 
 function vSet (eName,eValue)
   write eName & " = " & eValue
