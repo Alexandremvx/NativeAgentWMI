@@ -8,7 +8,7 @@ cscript WmiVbsAgent.vbs http://someserver/wmi/back/end/receiver
   - [X] connect to server through http(s)
   - [X] get wmi classes and properties to send
   - [X] parse and collect wmi info
-  - [.] send wmi info through http post
+  - [_] send wmi info through http post
   - [ ] ignore invalid wmi queries and define timeout to queries
   - [ ] return Exitcode to script caller [task scheduler]
  - [ ] Backend code in dynamic web based language [php]
