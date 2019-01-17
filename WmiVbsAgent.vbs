@@ -62,17 +62,17 @@ function loadRequestList(serverUrl)
   dim rList, rSep
   rList = ""
   rSep = ""
-  serverRequestList = Split(HTTPGet(serverUrl),chr(10))
+  serverRequestList = Split(Replace(HTTPGet(serverUrl),chr(10),";"),";")
   serverRequestListNum = UBound(serverRequestList)
   for each listItem in serverRequestList
-	if listItem <> "" then
+	if not (IsBlank(listItem)) then
 		rList = rList & rSep & listItem
-		rSep = Chr(10)
+		rSep = ";"
 	end if
   next
   requestList = Split(rList,rSep)
   if UBound(requestList) < 1 then 
-	exitReason 399, "Lista de requerimentos vazia"
+	  exitReason 399, "Lista de requerimentos vazia"
   end if
   loadRequestList = requestList
 end function

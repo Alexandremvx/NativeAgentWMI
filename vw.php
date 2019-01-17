@@ -9,18 +9,16 @@
 		$sqlresult = mysqli_query($conn, $sqlquery);
 
 		while($row = mysqli_fetch_array($sqlresult)){
-			echo $row['Field']."\n";
+			echo $row['Field'].";";
 		}
 		mysqli_close($conn);
 
-//Win32_BIOS.SerialNumber
-//Win32_NetworkAdapterConfiguration.IPAddress
-//Win32_ComputerSystem.Name
-//Win32_TimeZone.Caption
-//Win32_TimeZone.Bias
-//Win32_TimeZone.DaylightBias
-//WiN32_localtime.second
-
+//echo "Win32_BIOS.SerialNumber;Win32_NetworkAdapterConfiguration.IPAddress;Win32_ComputerSystem.Name;Win32_TimeZone.Caption;Win32_TimeZone.Bias;Win32_TimeZone.DaylightBias;WiN32_localtime.second";
+echo "
+invalido
+tambem_invalido;
+super hyper invalido
+";
 	}
 ?>
 
