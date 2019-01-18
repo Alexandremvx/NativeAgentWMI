@@ -23,27 +23,27 @@ DROP TABLE IF EXISTS `wminfo`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `wminfo` (
-  `Win32_BIOS.SerialNumber` varchar(767) NOT NULL,
-  `Win32_NetworkAdapterConfiguration.IPAddress` text,
-  `Win32_ComputerSystem.Domain` text,
-  `Win32_Timezone.Caption` text,
-  `Win32_Timezone.Bias` text,
-  `Win32_Timezone.DaylightBias` text,
-  `Win32_LocalTime.Year` text,
-  `Win32_LocalTime.Month` text,
-  `Win32_LocalTime.Day` text,
-  `Win32_LocalTime.Hour` text,
-  `Win32_LocalTime.Minute` text,
-  `Win32_LocalTime.Second` text,
-  `Win32_OperatingSystem.CurrentTimeZone` text,
-  `Win32_Timezone.DaylightDay` text,
-  `Win32_Timezone.DaylightDayOfWeek` text,
-  `Win32_Timezone.DaylightMonth` text,
-  `Win32_Timezone.StandardDay` text,
-  `Win32_Timezone.StandardDayOfWeek` text,
-  `Win32_Timezone.StandardMonth` text,
-  `Win32_OperatingSystem.Caption` text,
-  PRIMARY KEY (`Win32_BIOS.SerialNumber`)
+  `Win32_BIOS\SerialNumber` varchar(767) NOT NULL,
+  `Win32_NetworkAdapterConfiguration\IPAddress` text,
+  `Win32_ComputerSystem\Domain` text,
+  `Win32_Timezone\Caption` text,
+  `Win32_Timezone\Bias` text,
+  `Win32_Timezone\DaylightBias` text,
+  `Win32_LocalTime\Year` text,
+  `Win32_LocalTime\Month` text,
+  `Win32_LocalTime\Day` text,
+  `Win32_LocalTime\Hour` text,
+  `Win32_LocalTime\Minute` text,
+  `Win32_LocalTime\Second` text,
+  `Win32_OperatingSystem\CurrentTimeZone` text,
+  `Win32_Timezone\DaylightDay` text,
+  `Win32_Timezone\DaylightDayOfWeek` text,
+  `Win32_Timezone\DaylightMonth` text,
+  `Win32_Timezone\StandardDay` text,
+  `Win32_Timezone\StandardDayOfWeek` text,
+  `Win32_Timezone\StandardMonth` text,
+  `Win32_OperatingSystem\Caption` text,
+  PRIMARY KEY (`Win32_BIOS\SerialNumber`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
