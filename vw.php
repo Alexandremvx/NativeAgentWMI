@@ -4,7 +4,7 @@
 	$sqlPrimary = mysqli_query($conn, $sqlPrimaryQuery);
 	while($sqlPr = mysqli_fetch_array($sqlPrimary)){$sqlP = $sqlPr['Column_name'];}
 
-	if (isset($_POST[$sqlP]) ){ //or isset($_POST)
+	if (isset($_POST[$sqlP]) ){ // or isset($_POST)
 		var_dump($_POST);
 	} else {
 		$sqlquery = "DESCRIBE wminfo";
@@ -25,6 +25,8 @@ tambem_invalido;
 super hyper invalido
 ";
 	}
+
+//var_dump(file_get_contents('php://input'));
 ?>
 
 
@@ -53,5 +55,4 @@ super hyper invalido
 				}
         */
 	?>
-
 
