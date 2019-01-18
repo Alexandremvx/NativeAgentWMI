@@ -22,9 +22,8 @@ Function Start
  WMIRequestList = loadRequestList(WMIUrl)
  log "Propriedades requeridas: " & UBound(WMIRequestList)
  WMIForm = collectWMInfo(WMIRequestList)
- 'log HTTPPost(WMIUrl,WMIForm)
+ log HTTPPost(WMIUrl,WMIForm)
  
- log HTTPPost(WMIUrl,"Win32_BIOS.SerialNumber=123456")
 
 End Function
 
@@ -103,8 +102,8 @@ function getWMIProp (wPropReq)
   dim WMIPropList, rSep, wVal
   rSep = ""
   wReq = LCase(wPropReq)
-  wReqClass = Split(wReq,".")(0)
-  wProp = Split(wReq,".")(1)
+  wReqClass = Split(wReq,"\")(0)
+  wProp = Split(wReq,"\")(1)
   For each wItem in getWMIClass(wReqClass)
     wVal = Eval("wItem."&wProp)
     if not (IsBlank(wVal)) then
