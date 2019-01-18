@@ -4,7 +4,7 @@
 ' [X] connect to server through http(s)
 ' [X] get wmi classes to send
 ' [X] parse and collect wmi info
-' [.] send wmi info through http post
+' [x] send wmi info through http post
 ' [ ] adjust minimal interval
 ' [ ] return Exitcode to task scheduler
 
@@ -20,11 +20,12 @@ Function Start
  WMIUrl = GetWMIUrl
  log "ReportAddress=" & WMIUrl
  WMIRequestList = loadRequestList(WMIUrl)
+ log "Propriedades requeridas: " & UBound(WMIRequestList)
+ WMIForm = collectWMInfo(WMIRequestList)
+ 'log HTTPPost(WMIUrl,WMIForm)
+ 
+ log HTTPPost(WMIUrl,"Win32_BIOS.SerialNumber=123456")
 
-  log "########## teste de consulta #########" & chr(10)
-  for each WMIProp in WMIRequestList
-   log WMIProp & " = " & getWMIProp(WMIProp)
-  next
 End Function
 
 Function Log (msg)
@@ -120,7 +121,6 @@ function getWMIProp (wPropReq)
   getWMIProp = WMIPropList
 end function
 
-
 function getSystemId (mName)
   Set objWmi = objWMIService.ExecQuery( "SELECT SID FROM Win32_UserAccount WHERE SID LIKE '%-500' AND Domain = '" & mName & "'")
   For each objItem in objWmi
@@ -147,6 +147,14 @@ function getIPAddresses
   Next
   getIPAddresses = ipadd
 end Function
+
+Function collectWMInfo (wRequestList)
+  cProps = ""
+  for each WMIProp in wRequestList
+   cProps = cProps & WMIProp & "=" & getWMIProp(WMIProp) & "&"
+  next
+  collectWMInfo = cProps
+End Function
 
 function WMIFormFill
   set bios = gWmi("win32_Bios")
