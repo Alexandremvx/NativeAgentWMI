@@ -1,11 +1,16 @@
 <?php
-	if (isset($_POST["win32_bios.serialnumber"])){ 
+	include 'anotheronebitesthedust.php';
+	$sqlPrimaryQuery = "SHOW KEYS FROM wminfo WHERE Key_name = 'PRIMARY'";
+	$sqlPrimary = mysqli_query($conn, $sqlPrimaryQuery);
+	while($sqlPr = mysqli_fetch_array($sqlPrimary)){$sqlP = $sqlPr['Column_name'];}
+
+	if (isset($_POST[$sqlP]) ){ //or isset($_POST)
 		var_dump($_POST);
 	} else {
 		$sqlquery = "DESCRIBE wminfo";
-		//$conn = new mysqli("localhost", "root", "cascavel", "vw");
-		include 'anotheronebitesthedust.php';
-		if ($conn->connect_error) { die("Connection failed: " . $conn->connect_error); }
+		
+		
+		
 		$sqlresult = mysqli_query($conn, $sqlquery);
 
 		while($row = mysqli_fetch_array($sqlresult)){
@@ -24,7 +29,11 @@ super hyper invalido
 
 
 
+
 <?php
+ //$conn = new mysqli("localhost", "root", "cascavel", "vw");
+ //if ($conn->connect_error) { die("Connection failed: " . $conn->connect_error); }
+		
 	/*			$reqsource = $_SERVER['REMOTE_ADDR'];
 				$sqlquery = "Select * FROM hvht WHERE hostname = '" . $_POST['hostname'] . "' AND sid = '" . $_POST['sid'] . "'";
 				$sqlinsert = "INSERT INTO hvht (hostname, ipaddress, domain, timezone, bias, dlbias, tempolocal, hvi, hvf, hvini, hvfim, so, sid, rsource) VALUES ('" . $_POST['hostname'] . "','" . $_POST['ipaddress'] . "','" . $_POST['domain'] . "','" . $_POST['timezone'] . "','" . $_POST['bias'] . "','" . $_POST['dlbias'] . "','" . $_POST['localtime'] . "','" . $_POST['hvi'] . "','" . $_POST['hvf'] . "','" . $_POST['hvini'] . "','" . $_POST['hvfim'] . "','" . $_POST['so'] . "','" . $_POST['sid'] . "','" . $reqsource ."')";
