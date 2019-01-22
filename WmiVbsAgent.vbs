@@ -106,7 +106,7 @@ function getWMIProp (wPropReq)
   wProp = Split(wReq,"\")(1)
   For each wItem in getWMIClass(wReqClass)
     wVal = Eval("wItem."&wProp)
-    if not (IsBlank(wVal)) then
+    if wVal <> "" then
       if VarType(Eval("wItem."&wProp)) = (vbVariant + vbArray) then
         wVal = join(Eval("wItem."&wProp),",")
       Else
