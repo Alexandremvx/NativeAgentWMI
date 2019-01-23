@@ -4,7 +4,7 @@
 ' [X] connect to server through http(s)
 ' [X] get wmi classes to send
 ' [X] parse and collect wmi info
-' [x] send wmi info through http post
+' [X] send wmi info through http post
 ' [ ] adjust minimal interval
 ' [ ] return Exitcode to task scheduler
 
@@ -12,19 +12,20 @@
 Dim objWMIClasses, objWMIService
 Set objWMIService = GetObject("winmgmts:\\.\root\CIMV2")
 Set objWMIClasses = CreateObject("Scripting.Dictionary")
+
 'On Error resume next
 Start
+
 Function Start
  'On error resume next
- log "Iniciando WmiVbsAgent v0.9"
+ log "Iniciando WmiVbsAgent v1.0"
  WMIUrl = GetWMIUrl
  log "ReportAddress=" & WMIUrl
  WMIRequestList = loadRequestList(WMIUrl)
  log "Propriedades requeridas: " & UBound(WMIRequestList)
  WMIForm = collectWMInfo(WMIRequestList)
  log HTTPPost(WMIUrl,WMIForm)
- 
-
+ log "Finalizado"
 End Function
 
 Function Log (msg)
@@ -77,18 +78,6 @@ function loadRequestList(serverUrl)
   loadRequestList = requestList
 end function
 
-function vSet (eName,eValue)
-  write eName & " = " & eValue
-  WMIForm = WMIForm & eName & "=" & eValue & "&"
-end function
-
-function gWmi (wmiClass)
-  Set objWmi = objWMIService.ExecQuery( "SELECT * FROM " & wmiclass) 
-  For each objItem in objWmi
-    set gWmi = objItem
-  next
-end function
-
 Function getWMIClass (wClass)
   WMIClass = LCase(wClass)
   if not (objWMIClasses.Exists(WMIClass)) Then
@@ -97,13 +86,13 @@ Function getWMIClass (wClass)
   set getWMIClass = objWMIClasses(WMIClass)
 End Function
 
-function getWMIProp (wPropReq)
+Function getWMIProp (wPropReq)
   On Error Resume Next
   dim WMIPropList, rSep, wVal
   rSep = ""
   wReq = LCase(wPropReq)
-  wReqClass = Split(wReq,"\")(0)
-  wProp = Split(wReq,"\")(1)
+  wReqClass = Split(wReq,"$")(0)
+  wProp = Split(wReq,"$")(1)
   For each wItem in getWMIClass(wReqClass)
     wVal = Eval("wItem."&wProp)
     if wVal <> "" then
@@ -120,32 +109,12 @@ function getWMIProp (wPropReq)
   getWMIProp = WMIPropList
 end function
 
-function getSystemId (mName)
-  Set objWmi = objWMIService.ExecQuery( "SELECT SID FROM Win32_UserAccount WHERE SID LIKE '%-500' AND Domain = '" & mName & "'")
-  For each objItem in objWmi
-    getSystemId = objItem.sid
-  next
-end function
-
-function GetWMIUrl
+Function GetWMIUrl
  if WScript.Arguments.Count < 1 then
    exitReason 160, "[ERRO] NECESSARIO ESPECIFICAR A URL DE DESTINO"
  end if
   GetWMIUrl = WScript.Arguments(0)
 end function
-
-function getIPAddresses
-  Set nics = objWMIService.ExecQuery( "SELECT * FROM Win32_NetworkAdapterConfiguration")
-  sep = ""
-  ipadd = ""
-  For Each nic in nics
-    if nic.IPEnabled then
-     ipadd = ipadd & sep & join(nic.IPAddress,",")
-     sep = ","
-    end if
-  Next
-  getIPAddresses = ipadd
-end Function
 
 Function collectWMInfo (wRequestList)
   cProps = ""
@@ -155,34 +124,7 @@ Function collectWMInfo (wRequestList)
   collectWMInfo = cProps
 End Function
 
-function WMIFormFill
-  set bios = gWmi("win32_Bios")
-  set timezone = gWmi("win32_Timezone")
-  set localtime = gWmi("Win32_LocalTime")
-  set computersystem = gWmi("Win32_ComputerSystem")
-  set operatingsystem = gWmi("Win32_OperatingSystem")
-  SID = getSystemId(computersystem.Name)
-  IPAddresses = getIPAddresses
-  
-  if SID = "" then SID = computersystem.Domain
-  
-  vSet "hostname", computersystem.Name
-  vSet "ipaddress", IPAddresses
-  vSet "domain", computersystem.Domain
-  vSet "timezone", timezone.Caption
-  vSet "bias", timezone.bias
-  vSet "dlbias", timezone.DaylightBias
-  vSet "localtime", localtime.year & right("0" & localtime.month,2) & right("0" & localtime.day,2) & right("0" & localtime.hour,2) & right("0" & localtime.minute,2) & right("0" & localtime.second,2) & operatingsystem.CurrentTimeZone
-  vSet "hvi", timezone.DaylightDay & "_" & timezone.DaylightDayOfWeek & "_" & timezone.DaylightMonth
-  vSet "hvf", timezone.StandardDay & "_" & timezone.StandardDayOfWeek & "_" & timezone.StandardMonth
-  vSet "hvini", strDay(timezone.DaylightDay) & strDayOfWeek(timezone.DaylightDayOfWeek) & strMonth(timezone.DaylightMonth)
-  vSet "hvfim", strDay(timezone.StandardDay) & strDayOfWeek(timezone.StandardDayOfWeek) & strMonth(timezone.StandardMonth)
-  vSet "so", operatingsystem.Caption
-  vSet "sid", SID
-  vSet "serialnumber", bios.SerialNumber
-end function
-
-function exitReason (eCode,eMessage)
+Function exitReason (eCode,eMessage)
   log eMessage
   wscript.quit(eCode)
 end function

@@ -1,32 +1,41 @@
 <?php
 	include 'anotheronebitesthedust.php';
-	$sqlPrimaryQuery = "SHOW KEYS FROM wminfo WHERE Key_name = 'PRIMARY'";
+
+	$sqlPrimaryQuery = 'SHOW KEYS FROM wminfo WHERE Key_name = "PRIMARY"';
 	$sqlPrimary = mysqli_query($conn, $sqlPrimaryQuery);
 	while($sqlPr = mysqli_fetch_array($sqlPrimary)){$sqlP = $sqlPr['Column_name'];}
-
-	if (isset($_POST[$sqlP]) ){ // or isset($_POST)
-		var_dump($_POST);
-	} else {
-		$sqlquery = "DESCRIBE wminfo";
-		
-		
-		
-		$sqlresult = mysqli_query($conn, $sqlquery);
-
-		while($row = mysqli_fetch_array($sqlresult)){
-			echo $row['Field'].";";
+	
+	$sqlColumnsQuery = 'SHOW COLUMNS FROM wminfo WHERE Field like "%$%"';
+	$sqlColumns = mysqli_query($conn, $sqlColumnsQuery);
+	while($sqlCols = mysqli_fetch_array($sqlColumns)){$sqlCol=$sqlCol.$sqlCols['Field'].";";}
+	$sqlCola = split(';',$sqlCol);
+	
+	if (isset($_POST[$sqlP]) ){
+		echo "Action: Insert/Update\n";
+		$sep="";$qi="";
+		foreach ($_POST as $key => $value) {
+			if (substr_count($key,'$')==1 && in_array($key,$sqlCola)) {
+				echo "{$key} => {$value}\n";
+				$qi = $qi . $sep . $key . ' = "' . $value . '"';
+				$sep=",";
+			}
 		}
-		mysqli_close($conn);
-
-//echo "Win32_BIOS.SerialNumber;Win32_NetworkAdapterConfiguration.IPAddress;Win32_ComputerSystem.Name;Win32_TimeZone.Caption;Win32_TimeZone.Bias;Win32_TimeZone.DaylightBias;WiN32_localtime.second";
-echo "
-invalido
-tambem_invalido;
-super hyper invalido
-";
+		
+		$sqlWMIInsertQuery = 'INSERT INTO wminfo SET ' . $qi . ' ON DUPLICATE KEY UPDATE ' . $qi ;
+		$sqlWMIInsert = mysqli_query($conn, $sqlWMIInsertQuery);
+		echo "\nStatus = " . $sqlWMIInsert;
+	} else {
+		echo $sqlCol;
+		echo '
+		invalido
+		tambem_invalido;
+		super hyper invalido;
+		rougue$value
+		';
 	}
 
-//var_dump(file_get_contents('php://input'));
+
+	mysqli_close($conn);
 ?>
 
 
