@@ -24,7 +24,8 @@ Function Start
  WMIRequestList = loadRequestList(WMIUrl)
  log "Propriedades requeridas: " & UBound(WMIRequestList)
  WMIForm = collectWMInfo(WMIRequestList)
- log HTTPPost(WMIUrl,WMIForm)
+ WMIPostResponse = HTTPPost(WMIUrl,WMIForm)
+ log "WMIPostResponse:" + chr(10) + WMIPostResponse
  log "Finalizado"
 End Function
 
@@ -66,8 +67,8 @@ function loadRequestList(serverUrl)
   serverRequestList = Split(Replace(HTTPGet(serverUrl),chr(10),";"),";")
   serverRequestListNum = UBound(serverRequestList)
   for each listItem in serverRequestList
-	if not (IsBlank(listItem)) then
-		rList = rList & rSep & listItem
+  if (not (IsBlank(listItem)) and (InStr(listItem,"$")<>0) and (InStr(listItem,"$")=InStrRev(listItem,"$"))) then
+		rList = rList & rSep & replace(listItem," ","")
 		rSep = ";"
 	end if
   next

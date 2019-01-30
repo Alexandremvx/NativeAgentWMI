@@ -1,5 +1,5 @@
 <?php
-	include 'anotheronebitesthedust.php';
+	include 'anotheronebitesthedust.php'; //$conn = new mysqli("server", "user", "pass", "database");
 
 	$sqlPrimaryQuery = 'SHOW KEYS FROM wminfo WHERE Key_name = "PRIMARY"';
 	$sqlPrimary = mysqli_query($conn, $sqlPrimaryQuery);
@@ -15,32 +15,28 @@
 		$sep="";$qi="";
 		foreach ($_POST as $key => $value) {
 			if (substr_count($key,'$')==1 && in_array($key,$sqlCola)) {
-				echo "{$key} => {$value}\n";
+				echo "\t{$key} => {$value}\n";
 				$qi = $qi . $sep . $key . ' = "' . $value . '"';
 				$sep=",";
 			}
 		}
-		
+		$qi = $qi . $sep . 'source_address="'.$_SERVER['REMOTE_ADDR'].":".$_SERVER['SERVER_NAME'].'"';
 		$sqlWMIInsertQuery = 'INSERT INTO wminfo SET ' . $qi . ' ON DUPLICATE KEY UPDATE ' . $qi ;
 		$sqlWMIInsert = mysqli_query($conn, $sqlWMIInsertQuery);
-		echo "\nStatus = " . $sqlWMIInsert;
+		if ($sqlWMIInsert) {$istatus="OK";} else {$istatus="Falha";}
+		echo "\nStatus = " . $istatus;
 	} else {
 		echo $sqlCol;
-		echo '
-		invalido
-		tambem_invalido;
-		super hyper invalido;
-		rougue$value
-		';
+echo '
+invalido
+tambem_invalido;
+super hyper invalido;
+rougue$value
+	rougue2$value2$
+';
 	}
-
-
 	mysqli_close($conn);
 ?>
-
-
-
-
 <?php
  //$conn = new mysqli("localhost", "root", "cascavel", "vw");
  //if ($conn->connect_error) { die("Connection failed: " . $conn->connect_error); }
@@ -51,7 +47,7 @@
 				$sqlupdate = "UPDATE hvht SET ipaddress = '" . $_POST['ipaddress'] ."', domain = '" . $_POST['domain'] ."', timezone = '" . $_POST['timezone'] ."', bias = '" . $_POST['bias'] ."',    dlbias = '" . $_POST['dlbias'] ."', tempolocal = '" . $_POST['localtime'] ."',        hvi = '" . $_POST['hvi'] ."',        hvf = '" . $_POST['hvf'] ."',      hvini = '" . $_POST['hvini'] ."',      hvfim = '" . $_POST['hvfim'] ."',         so = '" . $_POST['so'] ."',  rsource = '" . $reqsource . "'  WHERE  hostname = '" . $_POST['hostname'] . "' AND sid = '" . $_POST['sid'] . "'";
 				
 				if ($dbupdate) {
-					$conn = new mysqli("localhost", "hvht", "hvht", "hvht_db");
+					$conn = new mysqli("localhost", "root", "cascavel", "vw");
 					if ($conn->connect_error) { die("Connection failed: " . $conn->connect_error); }
 					$sqlcheck = mysqli_query($conn, $sqlquery);
 					if($sqlcheck->num_rows > 0){
@@ -64,4 +60,3 @@
 				}
         */
 	?>
-
