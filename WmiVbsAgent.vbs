@@ -5,11 +5,11 @@
 ' [X] get wmi classes to send
 ' [X] parse and collect wmi info
 ' [X] send wmi info through http post
-' [ ] adjust minimal interval
+' [X] adjust minimal interval
 ' [ ] return Exitcode to task scheduler
 
 '################################################'
-Dim objWMIClasses, objWMIService
+Dim objWMIClasses, objWMIService, hotlap, hotlapTimer
 Set objWMIService = GetObject("winmgmts:\\.\root\CIMV2")
 Set objWMIClasses = CreateObject("Scripting.Dictionary")
 
@@ -17,16 +17,41 @@ Set objWMIClasses = CreateObject("Scripting.Dictionary")
 Start
 
 Function Start
- 'On error resume next
- log "Iniciando WmiVbsAgent v1.0"
- WMIUrl = GetWMIUrl
- log "ReportAddress=" & WMIUrl
- WMIRequestList = loadRequestList(WMIUrl)
- log "Propriedades requeridas: " & UBound(WMIRequestList)
- WMIForm = collectWMInfo(WMIRequestList)
- WMIPostResponse = HTTPPost(WMIUrl,WMIForm)
- log "WMIPostResponse:" + chr(10) + WMIPostResponse
- log "Finalizado"
+  'On error resume next
+  log "Iniciando HVM v1.0"
+  hotlap = -1
+  WMIUrl = GetWMIUrl
+  log "ReportURL=" & WMIUrl
+  Do
+    log "Aguardando: " & cStr(hotlapTimer/60000) & " Minutos"
+    Wscript.Sleep hotlapTimer
+    objWMIClasses.RemoveAll
+    WMIRequestList = loadRequestList(WMIUrl)
+    log "Propriedades requeridas: " & UBound(WMIRequestList)
+    WMIForm = collectWMInfo(WMIRequestList)
+    log "Enviando dados:" & chr(10) & Replace(WMIForm,"&",Chr(10))
+    WMIPostResponse = HTTPPost(WMIUrl,WMIForm)
+    WMIResponseStatus = applyResponseStatus(WMIPostResponse)
+    log "Dados enviados, retorno: " & WMIResponseStatus
+    log "Coletas restantes: " & hotlap
+  Loop Until hotlap =< 0
+  log "Finalizado"
+End Function
+
+Function applyResponseStatus(WMIResponse)
+  on Error resume next
+  for each WR in Split(WMIResponse,";")
+    if InStr(WR,"hotlap=")<>0 and hotlap<0 then
+      if Split(WR,"=")(1) =< 4 and Split(WR,"=")(1) > 0 then
+        hotlap = Split(WR,"=")(1)
+        hotlapTimer = 60000 * (60 / hotlap)
+      end if
+    elseif InStr(WR,"status=")<>0 then
+      RStatus = Split(WR,"=")(1)
+    end if
+  next
+  hotlap = hotlap - 1 
+  applyResponseStatus = RStatus
 End Function
 
 Function Log (msg)
