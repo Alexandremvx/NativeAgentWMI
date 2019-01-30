@@ -6,7 +6,7 @@
 ' [X] parse and collect wmi info
 ' [X] send wmi info through http post
 ' [X] adjust minimal interval
-' [ ] return Exitcode to task scheduler
+' [X] return Exitcode to task scheduler
 
 '################################################'
 Dim objWMIClasses, objWMIService, hotlap, hotlapTimer
@@ -18,7 +18,7 @@ Start
 
 Function Start
   'On error resume next
-  log "Iniciando HVM v1.0"
+  log "Iniciando HVM v1.2"
   hotlap = -1
   WMIUrl = GetWMIUrl
   log "ReportURL=" & WMIUrl
