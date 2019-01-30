@@ -11,22 +11,23 @@
 	$sqlCola = split(';',$sqlCol);
 	
 	if (isset($_POST[$sqlP]) ){
-		echo "Action: Insert/Update\n";
+		echo ";hotlap=4;Action: Insert/Update\n";
 		$sep="";$qi="";
 		foreach ($_POST as $key => $value) {
 			if (substr_count($key,'$')==1 && in_array($key,$sqlCola)) {
-				echo "\t{$key} => {$value}\n";
+				//echo "\t{$key} => {$value}\n";
 				$qi = $qi . $sep . $key . ' = "' . $value . '"';
 				$sep=",";
 			}
 		}
 		$qi = $qi . $sep . 'source_address="'.$_SERVER['REMOTE_ADDR'].":".$_SERVER['SERVER_NAME'].'"';
+		//echo str_replace(",","\n",$qi);
 		$sqlWMIInsertQuery = 'INSERT INTO wminfo SET ' . $qi . ' ON DUPLICATE KEY UPDATE ' . $qi ;
 		$sqlWMIInsert = mysqli_query($conn, $sqlWMIInsertQuery);
 		if ($sqlWMIInsert) {$istatus="OK";} else {$istatus="Falha";}
-		echo "\nStatus = " . $istatus;
+		echo "\n;status=" . $istatus . ";";
 	} else {
-		echo $sqlCol;
+		echo ";".$sqlCol;
 echo '
 invalido
 tambem_invalido;
