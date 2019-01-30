@@ -20,10 +20,9 @@
 --
 
 DROP TABLE IF EXISTS `wminfo`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `wminfo` (
   `Win32_BIOS$SerialNumber` varchar(767) NOT NULL,
+  `Win32_ComputerSystem$Name` text,
   `Win32_NetworkAdapterConfiguration$IPAddress` text,
   `Win32_ComputerSystem$Domain` text,
   `Win32_Timezone$Caption` text,
