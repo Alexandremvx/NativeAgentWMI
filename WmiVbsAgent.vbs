@@ -18,12 +18,12 @@ Start
 
 Function Start
   'On error resume next
-  log "Iniciando HVM v1.2"
+  log "Iniciando HVM v1.3"
   hotlap = -1
   WMIUrl = GetWMIUrl
   log "ReportURL=" & WMIUrl
   Do
-    log "Aguardando: " & cStr(hotlapTimer/60000) & " Minutos"
+    log "Aguardando: " & cStr(hotlapTimer/60000) & " Minutos" & chr(10)
     Wscript.Sleep hotlapTimer
     objWMIClasses.RemoveAll
     WMIRequestList = loadRequestList(WMIUrl)
@@ -35,7 +35,7 @@ Function Start
     log "Dados enviados, retorno: " & WMIResponseStatus
     log "Coletas restantes: " & hotlap
   Loop Until hotlap =< 0
-  log "Finalizado"
+  exitReason 0, "Finalizado"
 End Function
 
 Function applyResponseStatus(WMIResponse)
@@ -77,11 +77,13 @@ Function HTTPGet(sUrl)
 End Function
 
 Function HTTPPost(sUrl, sRequest)
+  On Error Resume Next
   set oHTTP = CreateObject("Microsoft.XMLHTTP")
   oHTTP.open "POST", sUrl,false
   oHTTP.setRequestHeader "Content-Type", "application/x-www-form-urlencoded"
   oHTTP.setRequestHeader "Content-Length", Len(sRequest)
   oHTTP.send sRequest
+  if oHTTP.status <> 200 then exitReason 204, "Erro ao acessar [" & sUrl & "] HTTP_" & oHTTP.status
   HTTPPost = oHTTP.responseText
 End Function
 
