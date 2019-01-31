@@ -11,7 +11,7 @@
 	$sqlCola = split(';',$sqlCol);
 	
 	if (isset($_POST[$sqlP]) ){
-		echo ";hotlap=4;Action: Insert/Update\n";
+		echo ";hotlap=1;Action: Insert/Update\n";
 		$sep="";$qi="";
 		foreach ($_POST as $key => $value) {
 			if (substr_count($key,'$')==1 && in_array($key,$sqlCola)) {
