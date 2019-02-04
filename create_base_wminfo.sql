@@ -22,7 +22,7 @@
 DROP TABLE IF EXISTS `wminfo`;
 CREATE TABLE `wminfo` (
   `Win32_BIOS$SerialNumber` varchar(767) NOT NULL,
-  `Win32_ComputerSystem$Name` text,
+  `Win32_ComputerSystem$Name` varchar(767) NOT NULL,
   `Win32_NetworkAdapterConfiguration$IPAddress` text,
   `Win32_ComputerSystem$Domain` text,
   `Win32_Timezone$Caption` text,
@@ -44,7 +44,7 @@ CREATE TABLE `wminfo` (
   `Win32_OperatingSystem$Caption` text,
   `source_address` text,
   `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`Win32_BIOS$SerialNumber`)
+  PRIMARY KEY (`Win32_BIOS$SerialNumber`,`Win32_ComputerSystem$Name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
