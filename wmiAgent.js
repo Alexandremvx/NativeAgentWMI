@@ -26,9 +26,69 @@ var objWMIClasses = new ActiveXObject("Scripting.Dictionary");
 })();
 
 
+wmiQuery("SELECT SerialNumber,BiosCharacteristics FROM win32_bios");
+//wmiQuery("SELECT * FROM Win32_NetworkAdapter");
+
+function wmiQuery(wmiQuery) {
+    log(wmiQuery);
+    var wmieItem = new Enumerator(objWMIService.ExecQuery(wmiQuery));
+    for (; !wmieItem.atEnd(); wmieItem.moveNext()) {
+        //log("Name: " + wmieItem.item().Name);
+        var wmieProp = new Enumerator(wmieItem.item().Properties_);
+        for (; !wmieProp.atEnd(); wmieProp.moveNext()) {
+            wmiNowItem = wmieProp.item();
+            // log(wmieProp.item().Name);
+            // log(wmieProp.item());
+            log("\t" + wmiNowItem.name + "[" + typeof (wmiNowItem.value) + "]: " + eval("wmieItem.item()." + wmiNowItem.name));
+            //log(wmiNowItem.value instanceof Array); 
+        }
+
+        //log(typeof (wmieItem.item().Properties_));
+    }
+
+
+    /*On Error Resume Next
+        dim WMIPropList, rSep, wVal
+        rSep = ""
+        wReq = LCase(wPropReq)
+        wReqClass = Split(wReq,"$")(0)
+        wProp = Split(wReq,"$")(1)
+        For each wItem in getWMIClass(wReqClass)
+          wVal = Eval("wItem."&wProp)
+          if wVal <> "" then
+            if VarType(Eval("wItem."&wProp)) = (vbVariant + vbArray) then
+              wVal = join(Eval("wItem."&wProp),",")
+            Else
+              wVal = Eval("wItem."&wProp)
+            end if
+            WMIPropList = WMIPropList & rSep & wVal
+            rSep = ","
+          end if
+          wVal = ""
+        Next
+        getWMIProp = WMIPropList    */
+}
+
+
+function getNetWorkAdapter() {
+    var strComputer = ".";
+    var objWMIService = GetObject("winmgmts:\\\\" + strComputer + "\\root\\cimv2");
+    var colItems = objWMIService.ExecQuery("SELECT * FROM Win32_NetworkAdapter", null, 48);
+    var objItem = new Enumerator(colItems);
+    for (; !objItem.atEnd(); objItem.moveNext()) {
+        WScript.Echo("-----------------------------------");
+        WScript.Echo("Win32_NetworkAdapter instance");
+        WScript.Echo("-----------------------------------");
+        WScript.Echo("Name: " + objItem.item().Name);
+    }
+
+}
 
 
 
+function isArray(x) {
+    return x.constructor.toString().indexOf("Array") > -1;
+}
 function httpPost(sUrl, sRequest) { var oHTTP = new ActiveXObject("Microsoft.XMLHTTP"); try { oHTTP.open("POST", sUrl, false); oHTTP.setRequestHeader("Content-Type", "application/x-www-form-urlencoded"); oHTTP.setRequestHeader("Content-Length", sRequest.length); oHTTP.send(sRequest); if (oHTTP.status != 200) exitReason(204, "Erro ao acessar [" + sUrl + "] HTTP_" + oHTTP_status); } catch (err) { exitReason(204, "Erro ao acessar [" + sUrl + "]: " + err.message); } return oHTTP.responseText; }
 function httpGet(sUrl) { var oHTTP = new ActiveXObject("Microsoft.XMLHTTP"); try { oHTTP.open("GET", sUrl, false); oHTTP.setRequestHeader("Content-Type", "application/x-www-form-urlencoded"); oHTTP.send(); if (oHTTP.status != 200) exitReason(204, "Erro ao acessar [" + sUrl + "] HTTP_" + oHTTP_status); } catch (err) { exitReason(204, "Erro ao acessar [" + sUrl + "]: " + err.message); } return oHTTP.responseText; }
 function getServerUrl() { if (WScript.Arguments.length < 1) exitReason(160, "[ERRO] NECESSARIO ESPECIFICAR A URL DE DESTINO"); return WScript.Arguments(0); }
